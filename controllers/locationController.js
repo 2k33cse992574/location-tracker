@@ -1,9 +1,13 @@
 const LocationRequest = require('../models/LocationRequest');
 
-// 📤 Send location request
+// @desc Send location request
 const sendRequest = async (req, res) => {
   try {
     const { sender, receiver } = req.body;
+
+    if (!sender || !receiver) {
+      return res.status(400).json({ error: 'Sender and receiver are required.' });
+    }
 
     const existing = await LocationRequest.findOne({ sender, receiver });
     if (existing) {
@@ -15,14 +19,19 @@ const sendRequest = async (req, res) => {
 
     res.status(201).json({ message: '📤 Request sent successfully.' });
   } catch (err) {
+    console.error('Error sending request:', err.message);
     res.status(500).json({ error: '❌ Failed to send request.' });
   }
 };
 
-// ✅ Accept location request
+// @desc Accept location request
 const acceptRequest = async (req, res) => {
   try {
     const { sender, receiver } = req.body;
+
+    if (!sender || !receiver) {
+      return res.status(400).json({ error: 'Sender and receiver are required.' });
+    }
 
     const request = await LocationRequest.findOne({ sender, receiver });
     if (!request) {
@@ -38,34 +47,19 @@ const acceptRequest = async (req, res) => {
 
     res.json({ message: '✅ Request accepted.' });
   } catch (err) {
+    console.error('Error accepting request:', err.message);
     res.status(500).json({ error: '❌ Failed to accept request.' });
   }
 };
 
-// 📍 Update location from receiver
-const updateLocation = async (req, res) => {
-  try {
-    const { sender, receiver, latitude, longitude } = req.body;
-
-    const request = await LocationRequest.findOne({ sender, receiver });
-    if (!request || request.status !== 'accepted') {
-      return res.status(403).json({ error: 'Tracking not allowed.' });
-    }
-
-    request.latitude = latitude;
-    request.longitude = longitude;
-    await request.save();
-
-    res.json({ message: '📡 Location updated successfully.' });
-  } catch (err) {
-    res.status(500).json({ error: '❌ Failed to update location.' });
-  }
-};
-
-// 📍 Track location (used by sender)
+// @desc Track location
 const trackLocation = async (req, res) => {
   try {
     const { sender, receiver } = req.body;
+
+    if (!sender || !receiver) {
+      return res.status(400).json({ error: 'Sender and receiver are required.' });
+    }
 
     const request = await LocationRequest.findOne({ sender, receiver });
     if (!request) {
@@ -73,17 +67,13 @@ const trackLocation = async (req, res) => {
     }
 
     if (request.status !== 'accepted') {
-      return res.json({ trackingAllowed: false });
+      return res.status(403).json({ error: 'Request not accepted yet.' });
     }
 
-    res.json({
-      trackingAllowed: true,
-      location: {
-        latitude: request.latitude,
-        longitude: request.longitude,
-      },
-    });
+    // For now, simulate tracking
+    res.json({ message: `📍 Tracking enabled between ${sender} and ${receiver}` });
   } catch (err) {
+    console.error('Error tracking location:', err.message);
     res.status(500).json({ error: '❌ Failed to track location.' });
   }
 };
@@ -91,6 +81,5 @@ const trackLocation = async (req, res) => {
 module.exports = {
   sendRequest,
   acceptRequest,
-  updateLocation,
-  trackLocation,
+  trackLocation
 };
