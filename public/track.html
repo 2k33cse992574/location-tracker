@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Live Location Tracker</title>
+</head>
+<body>
+  <h2>📡 Live Location Tracker</h2>
+
+  <input type="text" id="receiver" placeholder="Receiver Name or Number">
+  <button onclick="startTracking()">Start Tracking</button>
+
+  <p id="location"></p>
+
+  <script>
+    const serverURL = "http://localhost:5000";
+    let sender = "user"; // Can be replaced by real sender logic
+
+    function startTracking() {
+      const receiver = document.getElementById("receiver").value;
+
+      setInterval(() => {
+        fetch(`${serverURL}/api/location/track`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sender, receiver }),
+        })
+          .then(res => res.json())
+          .then(data => {
+            if (data.trackingAllowed && data.location) {
+              const { latitude, longitude } = data.location;
+              document.getElementById("location").innerText =
+                `📍 Latitude: ${latitude}\n📍 Longitude: ${longitude}`;
+            } else {
+              document.getElementById("location").innerText = "Waiting for receiver to accept...";
+            }
+          });
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
