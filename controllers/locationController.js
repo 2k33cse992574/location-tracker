@@ -1,61 +1,65 @@
 const LocationRequest = require("../models/LocationRequest");
 
-
-// Send a new location request
 const sendRequest = async (req, res) => {
   const { sender, receiver } = req.body;
-  try {
-    const newRequest = new LocationRequest({ sender, receiver });
-    await newRequest.save();
-    res.status(201).json({ message: "Request created", requestId: newRequest._id });
-  } catch (error) {
-    res.status(500).json({ message: "Error sending request" });
+
+  const existingRequest = await LocationRequest.findOne({ sender, receiver });
+
+  if (existingRequest) {
+    return res.status(200).json({ link: existingRequest._id });
   }
+
+  const newRequest = new LocationRequest({ sender, receiver });
+  await newRequest.save();
+
+  res.status(200).json({ link: newRequest._id });
 };
 
-// Accept a location request
 const acceptRequest = async (req, res) => {
   const { requestId } = req.body;
-  try {
-    const request = await LocationRequest.findById(requestId);
-    if (!request) return res.status(404).json({ message: "Request not found" });
 
-    request.accepted = true;
-    await request.save();
-    res.status(200).json({ message: "Request accepted" });
-  } catch (error) {
-    res.status(500).json({ message: "Error accepting request" });
-  }
+  const request = await LocationRequest.findById(requestId);
+  if (!request) return res.status(404).json({ message: "Request not found" });
+
+  request.accepted = true;
+  await request.save();
+
+  res.status(200).json({
+    message: "Request accepted",
+    sender: request.sender,
+    receiver: request.receiver,
+  });
 };
 
-// Update receiver's live location using requestId
 const updateLocation = async (req, res) => {
   const { requestId, latitude, longitude } = req.body;
-  try {
-    const request = await LocationRequest.findById(requestId);
-    if (!request) return res.status(404).json({ message: "Request not found" });
 
-    request.location = { latitude, longitude };
-    await request.save();
+  const request = await LocationRequest.findById(requestId);
+  if (!request) return res.status(404).json({ message: "Request not found" });
 
-    res.status(200).json({ message: "Location updated successfully" });
-  } catch (error) {
-    res.status(500).json({ message: "Error updating location" });
-  }
+  request.location = { latitude, longitude };
+  await request.save();
+
+  res.status(200).json({ message: "Location updated" });
 };
 
-// Get live location (for tracking)
-const getLocation = async (req, res) => {
-  const { requestId } = req.params;
-  try {
-    const request = await LocationRequest.findById(requestId);
-    if (!request || !request.location)
-      return res.status(404).json({ message: "Location not found" });
+const getLocationById = async (req, res) => {
+  const { id } = req.params;
 
-    const { latitude, longitude } = request.location;
+  try {
+    const request = await LocationRequest.findById(id);
+    if (!request || !request.accepted) {
+      return res.status(404).json({ message: "Location not available yet." });
+    }
+
+    const { latitude, longitude } = request.location || {};
+    if (!latitude || !longitude) {
+      return res.status(200).json({ message: "Location not shared yet." });
+    }
+
     res.status(200).json({ latitude, longitude });
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching location" });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
   }
 };
 
@@ -63,7 +67,5 @@ module.exports = {
   sendRequest,
   acceptRequest,
   updateLocation,
-  trackLocation,
-  getLocationById,
+  getLocationById, // ✅ Only export defined functions
 };
-
