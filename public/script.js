@@ -1,4 +1,5 @@
-const serverURL = "https://your-backend-domain.com/api/location"; // ✅ Change to your Render backend URL if hosted
+const serverURL = "https://location-tracker-1-le4f.onrender.com"; // ✅ actual deployed Render URL
+ // ✅ Change to your Render backend URL if hosted
 
 async function sendRequest() {
   const sender = prompt("Enter your name or number:");

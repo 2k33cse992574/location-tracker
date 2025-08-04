@@ -1,4 +1,4 @@
-const serverURL = "https://your-backend-domain.com"; // Replace with your deployed URL
+const serverURL = "https://location-tracker-1-le4f.onrender.com"; // Replace with your deployed URL
 
 function acceptRequest() {
   const urlParams = new URLSearchParams(window.location.search);
