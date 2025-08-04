@@ -52,6 +52,26 @@ const acceptRequest = async (req, res) => {
   }
 };
 
+// @desc Update location
+const updateLocation = async (req, res) => {
+  try {
+    // This can be expanded to store coordinates or logs
+    const { sender, receiver, latitude, longitude } = req.body;
+
+    if (!sender || !receiver || !latitude || !longitude) {
+      return res.status(400).json({ error: 'Missing location data.' });
+    }
+
+    // You could store this in a separate Location collection
+    console.log(`📍 Receiver (${receiver}) location: ${latitude}, ${longitude}`);
+
+    res.json({ message: '📡 Location updated successfully.' });
+  } catch (err) {
+    console.error('Error updating location:', err.message);
+    res.status(500).json({ error: '❌ Failed to update location.' });
+  }
+};
+
 // @desc Track location
 const trackLocation = async (req, res) => {
   try {
@@ -81,5 +101,6 @@ const trackLocation = async (req, res) => {
 module.exports = {
   sendRequest,
   acceptRequest,
+  updateLocation,  // ✅ Now correctly exported
   trackLocation
 };

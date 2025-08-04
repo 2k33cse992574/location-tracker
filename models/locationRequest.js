@@ -1,8 +1,5 @@
-// models/LocationRequest.js
+const mongoose = require("mongoose");
 
-const mongoose = require('mongoose');
-
-// Define the schema for a location request
 const locationRequestSchema = new mongoose.Schema({
   sender: {
     type: String,
@@ -14,12 +11,9 @@ const locationRequestSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['pending', 'accepted'],
-    default: 'pending',
+    enum: ["pending", "accepted"],
+    default: "pending",
   },
-}, {
-  timestamps: true, // adds createdAt and updatedAt fields
 });
 
-// Export the model
-module.exports = mongoose.model('LocationRequest', locationRequestSchema);
+module.exports = mongoose.model("LocationRequest", locationRequestSchema);

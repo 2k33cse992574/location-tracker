@@ -13,10 +13,10 @@ router.post('/send', sendRequest);
 // ✅ Accept location request
 router.post('/accept', acceptRequest);
 
-// 📡 Update location (called from receiver)
+// 📡 Update location
 router.post('/update', updateLocation);
 
-// 📍 Track location (called from sender)
+// 📍 Track location
 router.post('/track', trackLocation);
 
 module.exports = router;
