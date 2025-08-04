@@ -1,42 +1,27 @@
+<!-- track.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Live Location Tracker</title>
+  <title>Track Location</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    #map { height: 400px; width: 100%; margin-top: 20px; }
+  </style>
+  <!-- Leaflet CSS (optional for map) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
 <body>
-  <h2>📡 Live Location Tracker</h2>
-
-  <input type="text" id="receiver" placeholder="Receiver Name or Number">
+  <h2>Track Receiver's Live Location</h2>
+  <label>Enter Request ID: </label>
+  <input type="text" id="requestIdInput" placeholder="e.g., 64d3475..." />
   <button onclick="startTracking()">Start Tracking</button>
 
-  <p id="location"></p>
+  <div id="output"></div>
+  <div id="map"></div>
 
-  <script>
-    const serverURL = "http://localhost:5000";
-    let sender = "user"; // Can be replaced by real sender logic
-
-    function startTracking() {
-      const receiver = document.getElementById("receiver").value;
-
-      setInterval(() => {
-        fetch(`${serverURL}/api/location/track`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ sender, receiver }),
-        })
-          .then(res => res.json())
-          .then(data => {
-            if (data.trackingAllowed && data.location) {
-              const { latitude, longitude } = data.location;
-              document.getElementById("location").innerText =
-                `📍 Latitude: ${latitude}\n📍 Longitude: ${longitude}`;
-            } else {
-              document.getElementById("location").innerText = "Waiting for receiver to accept...";
-            }
-          });
-      }, 3000);
-    }
-  </script>
+  <!-- Leaflet JS (optional for map) -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="track.js"></script>
 </body>
 </html>

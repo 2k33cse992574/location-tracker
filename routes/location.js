@@ -1,22 +1,18 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
+
 const {
   sendRequest,
   acceptRequest,
   updateLocation,
   trackLocation,
-} = require('../controllers/locationController');
+  getLocationById,
+} = require("../controllers/locationController");
 
-// 📤 Send location request
-router.post('/send', sendRequest);
-
-// ✅ Accept location request
-router.post('/accept', acceptRequest);
-
-// 📡 Update location
-router.post('/update', updateLocation);
-
-// 📍 Track location
-router.post('/track', trackLocation);
+router.post("/send", sendRequest);
+router.post("/accept", acceptRequest);
+router.post("/update", updateLocation);
+router.post("/track", trackLocation);
+router.get("/:id", getLocationById); // ✅ new route for track.js
 
 module.exports = router;

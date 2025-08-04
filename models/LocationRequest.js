@@ -1,19 +1,13 @@
 const mongoose = require("mongoose");
 
 const locationRequestSchema = new mongoose.Schema({
-  sender: {
-    type: String,
-    required: true,
+  sender: String,
+  receiver: String,
+  accepted: { type: Boolean, default: false },
+  location: {
+    latitude: Number,
+    longitude: Number,
   },
-  receiver: {
-    type: String,
-    required: true,
-  },
-  status: {
-    type: String,
-    enum: ["pending", "accepted"],
-    default: "pending",
-  },
-});
+}, { timestamps: true });
 
 module.exports = mongoose.model("LocationRequest", locationRequestSchema);

@@ -3,11 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <title>Location Tracker</title>
+  <style>
+  body { font-family: sans-serif; padding: 20px; }
+  input { margin: 5px; padding: 8px; }
+  button { margin: 5px; padding: 8px 12px; }
+</style>
+
 </head>
 <body>
   <h2>📍 Location Request Tracker</h2>
 
+  <input type="text" id="sender" placeholder="Your Name or Number">
+
   <input type="text" id="receiver" placeholder="Receiver Name or Number">
+  
+
   
   <button onclick="sendRequest()">Send Request</button>
   <button onclick="generateLink()">Generate Link</button>
