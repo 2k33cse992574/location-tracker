@@ -1,5 +1,4 @@
-const serverURL = "https://location-tracker-1-le4f.onrender.com"; // Replace with your deployed URL
-
+const serverURL = "https://location-tracker-1-le4f.onrender.com";
 
 function acceptRequest() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -21,26 +20,29 @@ function acceptRequest() {
       if (data.message === "Request accepted") {
         document.getElementById("result").innerText = "✅ Request accepted. Sharing location...";
 
-        // Start sharing real location every 5 seconds
-        setInterval(() => {
-          navigator.geolocation.getCurrentPosition(
-            (position) => {
-              fetch(`${serverURL}/api/location/update`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                  requestId,
-                  latitude: position.coords.latitude,
-                  longitude: position.coords.longitude,
-                }),
-              });
-            },
-            (err) => {
-              console.error("Location error:", err.message);
-              document.getElementById("result").innerText = "❌ Location access denied.";
-            }
-          );
-        }, 5000);
+        // Start sharing live location continuously
+        navigator.geolocation.watchPosition(
+          (position) => {
+            fetch(`${serverURL}/api/location/update`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                requestId,
+                latitude: position.coords.latitude,
+                longitude: position.coords.longitude,
+              }),
+            });
+          },
+          (err) => {
+            console.error("Location error:", err.message);
+            document.getElementById("result").innerText = "❌ Location access denied.";
+          },
+          {
+            enableHighAccuracy: true,
+            maximumAge: 0,
+            timeout: 5000,
+          }
+        );
       } else {
         document.getElementById("result").innerText = "❌ Error accepting request.";
       }
@@ -50,4 +52,3 @@ function acceptRequest() {
       document.getElementById("result").innerText = "❌ Server error.";
     });
 }
-
