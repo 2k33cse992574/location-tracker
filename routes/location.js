@@ -9,6 +9,7 @@ const {
   getLocationById,
 } = require("../controllers/locationController");
 
+
 router.post("/send", sendRequest);
 router.post("/accept", acceptRequest);
 router.post("/update", updateLocation);

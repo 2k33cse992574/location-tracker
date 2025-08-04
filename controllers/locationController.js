@@ -63,5 +63,7 @@ module.exports = {
   sendRequest,
   acceptRequest,
   updateLocation,
-  getLocation,
+  trackLocation,
+  getLocationById,
 };
+
