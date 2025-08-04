@@ -9,7 +9,7 @@ function acceptRequest() {
     return;
   }
 
-  // Accept the request
+  // Accept location request
   fetch(`${serverURL}/api/location/accept`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -18,37 +18,48 @@ function acceptRequest() {
     .then((res) => res.json())
     .then((data) => {
       if (data.message === "Request accepted") {
-        document.getElementById("result").innerText = "✅ Request accepted. Sharing location...";
+        document.getElementById("result").innerText = "✅ Request accepted. Requesting location access...";
 
-        // Start sharing live location continuously
-        navigator.geolocation.watchPosition(
-          (position) => {
-            fetch(`${serverURL}/api/location/update`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({
-                requestId,
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude,
-              }),
-            });
-          },
-          (err) => {
-            console.error("Location error:", err.message);
-            document.getElementById("result").innerText = "❌ Location access denied.";
-          },
-          {
-            enableHighAccuracy: true,
-            maximumAge: 0,
-            timeout: 5000,
-          }
-        );
+        // Ask for location access and start sharing
+        if ("geolocation" in navigator) {
+          navigator.geolocation.getCurrentPosition(
+            () => {
+              // Start location sharing every 5 seconds
+              setInterval(() => {
+                navigator.geolocation.getCurrentPosition(
+                  (position) => {
+                    fetch(`${serverURL}/api/location/update`, {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({
+                        requestId,
+                        latitude: position.coords.latitude,
+                        longitude: position.coords.longitude,
+                      }),
+                    });
+                  },
+                  (err) => {
+                    console.error("Error getting location:", err.message);
+                    document.getElementById("result").innerText = "❌ Location access denied.";
+                  }
+                );
+              }, 5000);
+            },
+            (err) => {
+              console.error("Permission error:", err.message);
+              document.getElementById("result").innerText = "❌ Location permission denied.";
+            }
+          );
+        } else {
+          document.getElementById("result").innerText = "❌ Geolocation not supported.";
+        }
       } else {
         document.getElementById("result").innerText = "❌ Error accepting request.";
       }
     })
     .catch((err) => {
-      console.error("Error accepting request:", err.message);
+      console.error("Server error:", err.message);
       document.getElementById("result").innerText = "❌ Server error.";
     });
 }
+
