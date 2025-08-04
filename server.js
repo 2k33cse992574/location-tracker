@@ -1,38 +1,51 @@
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
+const mongoose = require("mongoose");
 const path = require("path");
-const connectDB = require("./config/db"); // Includes mongoose
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Connect to MongoDB
-connectDB();
-
-// Middleware
+// ✅ Middleware
 app.use(cors());
 app.use(express.json());
 
-// Routes
+// ✅ MongoDB Connection
+mongoose.connect(process.env.MONGO_URI, {
+  useUnifiedTopology: true,
+})
+.then(() => console.log("✅ MongoDB connected"))
+.catch((err) => console.error("❌ MongoDB connection error:", err));
+
+// ✅ API Routes
 const locationRoutes = require("./routes/location");
 app.use("/api/location", locationRoutes);
 
-// Serve static files from "public"
+// ✅ Serve Static Frontend Files
 app.use(express.static(path.join(__dirname, "public")));
 
-// Handle direct HTML routes like /accept.html or /track.html
-app.get("*", (req, res) => {
-  const filePath = path.join(__dirname, "public", req.url);
-  res.sendFile(filePath, (err) => {
-    if (err) {
-      res.status(404).send("Page not found");
-    }
-  });
+// ✅ Handle frontend routes (index.html, accept.html, track.html)
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
+app.get("/accept.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "accept.html"));
+});
+
+app.get("/track.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "track.html"));
+});
+
+// ✅ 404 fallback for other requests
+app.use((req, res) => {
+  res.status(404).send("❌ Page not found");
+});
+
+// ✅ Start Server
 app.listen(PORT, () => {
-  console.log(`✅ Server running on port ${PORT}`);
+  console.log(`🚀 Server is running on port ${PORT}`);
 });
