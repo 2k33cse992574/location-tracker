@@ -1,27 +1,87 @@
-<!-- track.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Track Location</title>
   <style>
-    body { font-family: Arial; padding: 20px; }
-    #map { height: 400px; width: 100%; margin-top: 20px; }
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    #map {
+      height: 400px;
+      width: 100%;
+      margin-top: 20px;
+    }
+    input, button {
+      padding: 8px;
+      font-size: 16px;
+      margin-right: 10px;
+    }
   </style>
-  <!-- Leaflet CSS (optional for map) -->
+  <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
 <body>
-  <h2>Track Receiver's Live Location</h2>
-  <label>Enter Request ID: </label>
-  <input type="text" id="requestIdInput" placeholder="e.g., 64d3475..." />
+
+  <h2>📡 Track Receiver's Live Location</h2>
+
+  <input type="text" id="requestIdInput" placeholder="6890572f4b29554bcecf2cb6" />
   <button onclick="startTracking()">Start Tracking</button>
 
   <div id="output"></div>
   <div id="map"></div>
 
-  <!-- Leaflet JS (optional for map) -->
+  <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script src="track.js"></script>
+  <script>
+    const serverURL = "https://location-tracker-1-le4f.onrender.com";
+    let map, marker;
+
+    function startTracking() {
+      const requestId = document.getElementById("requestIdInput").value.trim();
+      if (!requestId) {
+        alert("⚠️ Please enter a request ID.");
+        return;
+      }
+
+      setInterval(() => {
+        fetch(`${serverURL}/api/location/${requestId}`)
+          .then(res => res.json())
+          .then(data => {
+            if (!data || !data.latitude || !data.longitude) {
+              document.getElementById("output").innerText = "⏳ Waiting for location update...";
+              return;
+            }
+
+            const { latitude, longitude } = data;
+            document.getElementById("output").innerHTML = `
+              <p><strong>Latitude:</strong> ${latitude}</p>
+              <p><strong>Longitude:</strong> ${longitude}</p>
+            `;
+
+            updateMap(latitude, longitude);
+          })
+          .catch(err => {
+            console.error("Fetch error:", err);
+            document.getElementById("output").innerText = "❌ Failed to fetch location.";
+          });
+      }, 5000);
+    }
+
+    function updateMap(lat, lng) {
+      if (!map) {
+        map = L.map('map').setView([lat, lng], 15);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        marker = L.marker([lat, lng]).addTo(map);
+      } else {
+        marker.setLatLng([lat, lng]);
+        map.setView([lat, lng]);
+      }
+    }
+  </script>
 </body>
 </html>

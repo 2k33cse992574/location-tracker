@@ -1,43 +1,51 @@
-const serverURL = "https://location-tracker-1-le4f.onrender.com"; // ✅ actual deployed Render URL
- // ✅ Change to your Render backend URL if hosted
+const serverURL = "https://location-tracker-1-le4f.onrender.com"; 
 
-async function sendRequest() {
-  const sender = prompt("Enter your name or number:");
-  const receiver = document.getElementById("receiver").value;
+let lastLink = "";
+
+function sendRequest() {
+  const sender = document.getElementById("sender").value.trim();
+  const receiver = document.getElementById("receiver").value.trim();
 
   if (!sender || !receiver) {
-    alert("Please enter both sender and receiver.");
+    alert("Please enter both sender and receiver!");
     return;
   }
 
-  const response = await fetch(`${serverURL}/send`, {
+  fetch(`${serverURL}/api/location/send`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ sender, receiver }),
-  });
-
-  const data = await response.json();
-  const link = `${window.location.origin}/accept.html?id=${data.link}`;
-  document.getElementById("result").innerText = "Link: " + link;
-  localStorage.setItem("lastRequestLink", link);
+  })
+    .then((res) => res.json())
+    .then((data) => {
+      lastLink = `${serverURL}/accept.html?id=${data.link}`;
+      document.getElementById("result").innerHTML = `
+        ✅ Request sent!<br>
+        <a href="${lastLink}" target="_blank">${lastLink}</a>
+      `;
+    })
+    .catch((err) => {
+      console.error("Send request failed:", err.message);
+      document.getElementById("result").innerText = "❌ Failed to send request.";
+    });
 }
 
 function generateLink() {
-  const link = localStorage.getItem("lastRequestLink");
-  if (link) {
-    document.getElementById("result").innerText = "Link: " + link;
-  } else {
-    alert("No request found. Send one first.");
+  if (!lastLink) {
+    alert("Send a request first.");
+    return;
   }
+  prompt("Copy this link:", lastLink);
 }
 
 function sendViaWhatsApp() {
-  const link = localStorage.getItem("lastRequestLink");
-  if (link) {
-    const text = `Please accept my location request: ${link}`;
-    const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
-    window.open(url, "_blank");
-  } else {
-    alert("Generate link first.");
+  if (!lastLink) {
+    alert("Send a request first.");
+    return;
   }
+
+  const message = `Hey! Please accept my location tracking request here: ${lastLink}`;
+  const whatsappURL = `https://wa.me/?text=${encodeURIComponent(message)}`;
+  window.open(whatsappURL, "_blank");
 }
+
