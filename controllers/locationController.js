@@ -1,4 +1,5 @@
-const LocationRequest = require("../models/location");
+const LocationRequest = require("../models/LocationRequest");
+
 
 // Send a new location request
 const sendRequest = async (req, res) => {
