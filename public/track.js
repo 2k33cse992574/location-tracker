@@ -1,4 +1,4 @@
-const serverURL = "https://location-tracker-1-le4f.onrender.com"; // 🔁 Replace with actual backend domain
+const serverURL = "https://location-tracker-1-le4f.onrender.com"; 
 let map, marker;
 
 function startTracking() {

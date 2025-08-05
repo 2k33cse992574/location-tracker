@@ -16,15 +16,15 @@ function sendRequest() {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ sender, receiver }),
   })
-    .then((res) => res.json())
-    .then((data) => {
+    .then(res => res.json())
+    .then(data => {
       lastLink = `${serverURL}/accept.html?id=${data.link}`;
       document.getElementById("result").innerHTML = `
         ✅ Request sent!<br>
         <a href="${lastLink}" target="_blank">${lastLink}</a>
       `;
     })
-    .catch((err) => {
+    .catch(err => {
       console.error("Send request failed:", err.message);
       document.getElementById("result").innerText = "❌ Failed to send request.";
     });
@@ -43,9 +43,7 @@ function sendViaWhatsApp() {
     alert("Send a request first.");
     return;
   }
-
   const message = `Hey! Please accept my location tracking request here: ${lastLink}`;
   const whatsappURL = `https://wa.me/?text=${encodeURIComponent(message)}`;
   window.open(whatsappURL, "_blank");
 }
-
