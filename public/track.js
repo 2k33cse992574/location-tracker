@@ -23,7 +23,7 @@ function startTracking() {
   }
 
   setInterval(() => {
-    fetch(`${serverURL}/api/location/${requestId}`)
+    fetch(`/api/location/${requestId}`)
       .then(res => res.json())
       .then(data => {
         if (!data || !data.latitude || !data.longitude) {
