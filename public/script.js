@@ -4,7 +4,6 @@ let lastLink = "";
 function sendRequest() {
   const sender = document.getElementById("sender").value.trim();
   const receiver = document.getElementById("receiver").value.trim();
-  const phone = document.getElementById("phone").value.trim();
 
   if (!sender || !receiver) return alert("Please enter both names.");
 
@@ -15,7 +14,7 @@ function sendRequest() {
   })
     .then(res => res.json())
     .then(data => {
-      lastLink = `${serverURL}/accept.html?id=${data.link}`;
+      lastLink = `${window.location.origin}/accept.html?id=${data.link}`;
       const trackLink = `/track.html?id=${data.link}`;
       document.getElementById("result").innerHTML = `
         ✅ Request sent!<br><br>
