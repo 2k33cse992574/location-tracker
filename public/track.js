@@ -1,5 +1,19 @@
-const serverURL = "https://location-tracker-1-le4f.onrender.com"; 
 let map, marker;
+
+window.onload = () => {
+  // Initialize map with a default global view
+  map = L.map('map').setView([20, 0], 2);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors'
+  }).addTo(map);
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const id = urlParams.get('id');
+  if (id) {
+    document.getElementById("requestIdInput").value = id;
+    startTracking();
+  }
+};
 
 function startTracking() {
   const requestId = document.getElementById("requestIdInput").value.trim();
@@ -13,7 +27,8 @@ function startTracking() {
       .then(res => res.json())
       .then(data => {
         if (!data || !data.latitude || !data.longitude) {
-          document.getElementById("output").innerText = "Waiting for location update...";
+          const msg = data.message || "Waiting for location update...";
+          document.getElementById("output").innerText = msg;
           return;
         }
 
@@ -34,13 +49,9 @@ function startTracking() {
 }
 
 function updateMap(lat, lng) {
-  if (!map) {
-    map = L.map('map').setView([lat, lng], 15);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
-
+  if (!marker) {
     marker = L.marker([lat, lng]).addTo(map);
+    map.setView([lat, lng], 15);
   } else {
     marker.setLatLng([lat, lng]);
     map.setView([lat, lng]);

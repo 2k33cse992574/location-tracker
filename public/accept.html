@@ -4,50 +4,25 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Accept Location Request</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f5f5;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-    }
-
-    h2 {
-      color: #333;
-    }
-
-    #result {
-      margin-top: 20px;
-      font-size: 16px;
-      color: #006400;
-    }
-
-    button {
-      padding: 12px 24px;
-      font-size: 16px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      margin: 8px;
-    }
-
-    button:hover {
-      background-color: #45a049;
-    }
-  </style>
+  <link rel="stylesheet" href="index.css" />
 </head>
 <body>
-  <h2>Do you want to share your live location?</h2>
-  <button onclick="acceptRequest()">Yes, Share Location</button>
-  <button onclick="stopSharing()" id="stopBtn" style="display:none;">Stop Sharing</button>
-  <div id="result"></div>
+  <div class="glass-container">
+    <h2>📡 Share Live Location</h2>
+    <p style="text-align: center; color: var(--text-muted); margin-top: -10px; margin-bottom: 20px;">
+      Someone has requested to view your live location.
+    </p>
 
-  <script src="accept.js"></script>
+    <button class="success pulse-btn" onclick="acceptRequest()" id="startBtn">
+      ✅ Yes, Share Location
+    </button>
+    <button class="danger" onclick="stopSharing()" id="stopBtn" style="display:none;">
+      🛑 Stop Sharing
+    </button>
+    
+    <div id="result"></div>
+  </div>
+
+  <script src="accept.js?v=4"></script>
 </body>
 </html>

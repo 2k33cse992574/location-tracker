@@ -1,5 +1,3 @@
-const serverURL = "https://location-tracker-1-le4f.onrender.com";
-
 let locationInterval = null;
 
 function acceptRequest() {
@@ -11,7 +9,7 @@ function acceptRequest() {
     return;
   }
 
-  fetch(`${serverURL}/api/location/accept`, {
+  fetch(`/api/location/accept`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ requestId }),
@@ -21,13 +19,11 @@ function acceptRequest() {
       if (data.message === "Request accepted") {
         document.getElementById("result").innerText = "✅ Request accepted. Requesting location permission...";
 
-        navigator.permissions.query({ name: "geolocation" }).then(result => {
-          if (result.state === "denied") {
-            document.getElementById("result").innerText = "❌ Location permission denied. Please enable it manually.";
-          } else {
-            startSharingLocation(requestId);
-          }
-        });
+        if ("geolocation" in navigator) {
+          startSharingLocation(requestId);
+        } else {
+          document.getElementById("result").innerText = "❌ Geolocation is not supported by your browser.";
+        }
       } else {
         document.getElementById("result").innerText = "❌ Error accepting request.";
       }
@@ -58,14 +54,20 @@ function startSharingLocation(requestId) {
       document.getElementById("stopBtn").style.display = "inline-block";
     },
     error => {
-      console.error("Location error:", error.message);
-      document.getElementById("result").innerText = "❌ Location access denied or unavailable.";
+      console.error("Location error:", error);
+      let errMsg = "❌ Location access denied or unavailable.";
+      if (window.isSecureContext === false) {
+        errMsg = "❌ Geolocation requires HTTPS or localhost. If you are using an IP address (like 192.168.x.x), the browser will block location access.";
+      } else if (error.code === 1) {
+        errMsg = "❌ Permission denied. You must allow location access in your browser.";
+      }
+      document.getElementById("result").innerText = errMsg;
     }
   );
 }
 
 function sendLocation(latitude, longitude, requestId) {
-  fetch(`${serverURL}/api/location/update`, {
+  fetch(`/api/location/update`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ requestId, latitude, longitude }),

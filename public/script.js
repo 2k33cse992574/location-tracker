@@ -1,17 +1,14 @@
-const serverURL = "https://location-tracker-1-le4f.onrender.com"; 
-
 let lastLink = "";
 
+// Sender sends a location request
 function sendRequest() {
   const sender = document.getElementById("sender").value.trim();
   const receiver = document.getElementById("receiver").value.trim();
+  const phone = document.getElementById("phone").value.trim();
 
-  if (!sender || !receiver) {
-    alert("Please enter both sender and receiver!");
-    return;
-  }
+  if (!sender || !receiver) return alert("Please enter both names.");
 
-  fetch(`${serverURL}/api/location/send`, {
+  fetch(`/api/location/send`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ sender, receiver }),
@@ -19,14 +16,18 @@ function sendRequest() {
     .then(res => res.json())
     .then(data => {
       lastLink = `${serverURL}/accept.html?id=${data.link}`;
+      const trackLink = `/track.html?id=${data.link}`;
       document.getElementById("result").innerHTML = `
-        ✅ Request sent!<br>
-        <a href="${lastLink}" target="_blank">${lastLink}</a>
+        ✅ Request sent!<br><br>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <a href="${lastLink}" target="_blank" style="word-break: break-all;">Share this link: ${lastLink}</a>
+          <a href="${trackLink}" target="_blank" style="background:var(--accent); color:#fff; padding:10px; border-radius:8px; text-align:center; text-decoration:none;">🛰️ Track Location Here</a>
+        </div>
       `;
     })
     .catch(err => {
-      console.error("Send request failed:", err.message);
-      document.getElementById("result").innerText = "❌ Failed to send request.";
+      console.error("Send request failed:", err);
+      document.getElementById("result").innerText = "❌ Failed to send request: " + err.message;
     });
 }
 

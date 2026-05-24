@@ -42,7 +42,13 @@ app.get("/track.html", (req, res) => {
 
 // ✅ 404 fallback for other requests
 app.use((req, res) => {
-  res.status(404).send("❌ Page not found");
+  res.status(404).json({ message: "❌ Page not found" });
+});
+
+// ✅ Global Error Handler
+app.use((err, req, res, next) => {
+  console.error("Global error handler caught:", err);
+  res.status(500).json({ message: "Database connection failed or timed out. Please check your MongoDB IP Whitelist." });
 });
 
 // ✅ Start Server

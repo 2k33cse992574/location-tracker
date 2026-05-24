@@ -2,35 +2,30 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>📍 Location Request Tracker</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-    }
-
-    input, button {
-      margin: 10px;
-      padding: 10px;
-    }
-
-    #result {
-      margin-top: 20px;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>📍 Location Tracker</title>
+  <link rel="stylesheet" href="index.css" />
 </head>
 <body>
-  <h2>📍 Location Request Tracker</h2>
+  <div class="glass-container">
+    <h2>📍 Location Tracker</h2>
+    
+    <input type="text" id="sender" placeholder="Your Name or Number" />
+    <input type="text" id="receiver" placeholder="Receiver Name or Number" />
 
-  <input type="text" id="sender" placeholder="Your Name or Number" />
-  <input type="text" id="receiver" placeholder="Receiver Name or Number" />
+    <button class="primary" onclick="sendRequest()">
+      🚀 Send Request
+    </button>
+    <button class="accent" onclick="generateLink()">
+      🔗 Generate Link
+    </button>
+    <button class="success" onclick="sendViaWhatsApp()">
+      💬 Send via WhatsApp
+    </button>
 
-  <button onclick="sendRequest()">Send Request</button>
-  <button onclick="generateLink()">Generate Link</button>
-  <button onclick="sendViaWhatsApp()">Send via WhatsApp</button>
+    <div id="result"></div>
+  </div>
 
-  <p id="result"></p>
-
-  <script src="script.js"></script>
+  <script src="script.js?v=4"></script>
 </body>
 </html>
